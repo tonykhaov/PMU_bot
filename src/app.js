@@ -1,11 +1,15 @@
 import dotenv from "dotenv";
 import puppeteer from "puppeteer";
+import dayjs from "dayjs";
+import "dayjs/locale/fr.js";
 
 dotenv.config();
+dayjs.locale("fr");
 
 const { WEBSITE, ACCESS_CODE, PASSWORD, NODE_ENV } = process.env;
 
 (async () => {
+  const now = dayjs();
   const browser = await puppeteer.launch({ headless: NODE_ENV !== "demo" });
   const page = await browser.newPage();
   await page.goto(WEBSITE);
@@ -46,6 +50,15 @@ const { WEBSITE, ACCESS_CODE, PASSWORD, NODE_ENV } = process.env;
     monthRows.map((month) => month.textContent)
   );
   console.log("months:", months);
+
+  const previousMonth = now.subtract(1, "month").format("MMMM");
+  const regexPreviousMonth = new RegExp(previousMonth, "i");
+  const previousMonthIndex = months.findIndex((month) =>
+    month.match(regexPreviousMonth)
+  );
+
+  console.log("previousMonth", previousMonth);
+  console.log("previousMonthIndex", previousMonthIndex);
 
   await browser.close();
 })();
