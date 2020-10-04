@@ -19,21 +19,19 @@ const { WEBSITE, ACCESS_CODE, PASSWORD, NODE_ENV } = process.env;
   await page.keyboard.press("Tab");
   await page.keyboard.type(PASSWORD);
   await page.screenshot({ path: "./dist/screenshots/loginPage.png" });
-
   await page.click("td.button");
-  await page.waitForNavigation({ waitUntil: "domcontentloaded" });
+
+  await page.waitForSelector("img.clubAvantage");
   await page.screenshot({ path: "./dist/screenshots/portalPage.png" });
   console.log("loginPage passed");
 
-  await Promise.all([
-    await page.waitForSelector("img.clubAvantage"),
-    await page.click("img.clubAvantage"),
-    await page.setViewport({ width: 900, height: 798, isMobile: false }),
-  ]);
-  console.log("portalPage passed"),
-    await page.waitForSelector(".dropdown-content");
+  await page.click("img.clubAvantage");
+  console.log("portalPage passed");
+
+  await page.setViewport({ width: 900, height: 798, isMobile: false });
   await page.screenshot({ path: "./dist/screenshots/homePage.png" });
-  await page.click("a#menu_switch");
+  await page.waitForSelector("#menu_switch");
+  await page.click("#menu_switch");
   console.log("homePage passed");
 
   await page.waitForNavigation({ waitUntil: "domcontentloaded" });
