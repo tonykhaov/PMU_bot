@@ -52,7 +52,7 @@ async function puppeteer() {
   const previousMonth = now.subtract(1, "month").format("MMMM");
   const regexPreviousMonth = new RegExp(previousMonth, "i");
   const previousMonthIndex = months.findIndex((month) =>
-    month.match(regexPreviousMonth)
+    regexPreviousMonth.test(month)
   );
   console.log("previousMonth:", previousMonth);
 
