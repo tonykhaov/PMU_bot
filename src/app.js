@@ -3,13 +3,13 @@ import puppeteer from "puppeteer";
 
 dotenv.config();
 
-const { WEBSITE, ACCESS_CODE, PASSWORD } = process.env;
+const { WEBSITE, ACCESS_CODE, PASSWORD, NODE_ENV } = process.env;
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: NODE_ENV !== "demo" });
   const page = await browser.newPage();
-  await page.goto(WEBSITE);
   await page.setViewport({ width: 640, height: 480, isMobile: true });
+  await page.goto(WEBSITE);
 
   await page.type("input#login.homeInput", ACCESS_CODE);
   await page.keyboard.press("Tab");
