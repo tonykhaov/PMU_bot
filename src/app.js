@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import puppeteer from "puppeteer";
+import Puppeteer from "puppeteer";
 import dayjs from "dayjs";
 import "dayjs/locale/fr.js";
 
@@ -8,10 +8,10 @@ dayjs.locale("fr");
 
 const { WEBSITE, ACCESS_CODE, PASSWORD, NODE_ENV } = process.env;
 
-(async () => {
+async function puppeteer() {
   const now = dayjs();
 
-  const browser = await puppeteer.launch({ headless: NODE_ENV !== "demo" });
+  const browser = await Puppeteer.launch({ headless: NODE_ENV !== "demo" });
   const page = await browser.newPage();
 
   await page.setViewport({ width: 640, height: 480, isMobile: true });
@@ -57,4 +57,6 @@ const { WEBSITE, ACCESS_CODE, PASSWORD, NODE_ENV } = process.env;
   console.log("previousMonth:", previousMonth);
 
   await browser.close();
-})();
+}
+
+puppeteer();
