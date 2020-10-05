@@ -14,6 +14,10 @@ if (!WEBSITE || !ACCESS_CODE || !PASSWORD) {
 
 async function puppeteer() {
   const now = dayjs();
+  const previousMonth = now.subtract(1, "month").format("MMMM");
+  console.log(
+    `Recherche du fichier des commissions pour le mois de: ${previousMonth.toUpperCase()}`
+  );
 
   const browser = await Puppeteer.launch({ headless: NODE_ENV !== "demo" });
   const page = await browser.newPage();
@@ -44,25 +48,32 @@ async function puppeteer() {
 
   await page.click(".dropdown a");
   await page.click(".dropdown-content a");
+  await page.setViewport({ width: 1366, height: 798, isMobile: false });
   await page.waitForSelector("tr.month");
   await page.screenshot({ path: "./dist/screenshots/comissionsPage.png" });
   console.log("--> comissionPage");
 
-  const months = await page.$$eval(".month a[href^='#']", (monthRows) =>
+  const months = await page.$$eval("#fileContent tr.month", (monthRows) =>
     monthRows.map((month) => month.textContent)
   );
-
-  const previousMonth = now.subtract(1, "month").format("MMMM");
   const regexPreviousMonth = new RegExp(previousMonth, "i");
   const previousMonthIndex = months.findIndex((month) =>
     regexPreviousMonth.test(month)
   );
-
   const previousMonthHTML = await page.$(
-    `#fileContent tr.month:nth-child(${previousMonthIndex})`
+    `#fileContent tr.month:nth-child(${previousMonthIndex + 1})`
   );
 
-  if (NODE_ENV !== "demo") await browser.close();
+  await previousMonthHTML.click(".actionsMenu");
+  const previousMonthPDFLink = await previousMonthHTML.$eval(
+    ".actionsdetails a.button.iconPrint",
+    (a) => a.href
+  );
+  console.log("--> PDF page");
+
+  await page.goto(previousMonthPDFLink);
+
+  await browser.close();
 }
 
 puppeteer();
