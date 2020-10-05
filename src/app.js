@@ -25,7 +25,7 @@ async function puppeteer() {
   await page.setViewport({ width: 640, height: 480, isMobile: true });
   await page.goto(WEBSITE);
   await page.screenshot({ path: "./dist/screenshots/loginPage.png" });
-  console.log("--> loginPage");
+  console.log("--> login page");
 
   await page.type("input#login.homeInput", ACCESS_CODE);
   await page.keyboard.press("Tab");
@@ -33,25 +33,25 @@ async function puppeteer() {
   await page.click("td.button");
   await page.waitForSelector("img.clubAvantage");
   await page.screenshot({ path: "./dist/screenshots/portalPage.png" });
-  console.log("--> portalPage");
+  console.log("--> portal page");
 
   await page.click("img.clubAvantage");
   await page.setViewport({ width: 900, height: 798, isMobile: false });
   await page.waitForSelector("#menu_switch");
   await page.screenshot({ path: "./dist/screenshots/homePage.png" });
-  console.log("--> homePage");
+  console.log("--> home page");
 
   await page.click("#menu_switch");
   await page.waitForNavigation({ waitUntil: "domcontentloaded" });
   await page.screenshot({ path: "./dist/screenshots/gestionPage.png" });
-  console.log("--> gestionPage");
+  console.log("--> gestion page");
 
   await page.click(".dropdown a");
   await page.click(".dropdown-content a");
   await page.setViewport({ width: 1366, height: 798, isMobile: false });
   await page.waitForSelector("tr.month");
-  await page.screenshot({ path: "./dist/screenshots/comissionsPage.png" });
-  console.log("--> comissionPage");
+  await page.screenshot({ path: "./dist/screenshots/commissionsPage.png" });
+  console.log("--> commission page");
 
   const months = await page.$$eval("#fileContent tr.month", (monthRows) =>
     monthRows.map((month) => month.textContent)
@@ -69,9 +69,9 @@ async function puppeteer() {
     ".actionsdetails a.button.iconPrint",
     (a) => a.href
   );
-  console.log("--> PDF page");
 
   await page.goto(previousMonthPDFLink);
+  console.log("--> PDF page");
 
   await browser.close();
 }
