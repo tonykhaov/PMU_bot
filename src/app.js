@@ -65,13 +65,18 @@ async function puppeteer() {
   );
 
   await previousMonthHTML.click(".actionsMenu");
+  await previousMonthHTML.click(".actionsdetails a.button.iconPrint");
   const previousMonthPDFLink = await previousMonthHTML.$eval(
     ".actionsdetails a.button.iconPrint",
     (a) => a.href
   );
-
+  await page._client.send("Page.setDownloadBehavior", {
+    behavior: "allow",
+    downloadPath: "./dist/pdf",
+  });
   await page.goto(previousMonthPDFLink);
-  console.log("--> PDF page");
+
+  console.log("--> PDF downloaded");
 
   await browser.close();
 }
