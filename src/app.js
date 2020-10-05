@@ -62,7 +62,7 @@ async function puppeteer() {
     `#fileContent tr.month:nth-child(${previousMonthIndex})`
   );
 
-  await browser.close();
+  if (NODE_ENV !== "demo") await browser.close();
 }
 
 puppeteer();
