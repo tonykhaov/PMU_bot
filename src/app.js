@@ -8,6 +8,10 @@ dayjs.locale("fr");
 
 const { WEBSITE, ACCESS_CODE, PASSWORD, NODE_ENV } = process.env;
 
+if (!WEBSITE || !ACCESS_CODE || !PASSWORD) {
+  throw new Error("Website, Access code or Password missing.");
+}
+
 async function puppeteer() {
   const now = dayjs();
 
@@ -47,14 +51,16 @@ async function puppeteer() {
   const months = await page.$$eval(".month a[href^='#']", (monthRows) =>
     monthRows.map((month) => month.textContent)
   );
-  console.log("months:", months);
 
   const previousMonth = now.subtract(1, "month").format("MMMM");
   const regexPreviousMonth = new RegExp(previousMonth, "i");
   const previousMonthIndex = months.findIndex((month) =>
     regexPreviousMonth.test(month)
   );
-  console.log("previousMonth:", previousMonth);
+
+  const previousMonthHTML = await page.$(
+    `#fileContent tr.month:nth-child(${previousMonthIndex})`
+  );
 
   await browser.close();
 }
