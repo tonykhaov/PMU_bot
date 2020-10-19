@@ -13,11 +13,12 @@ if (!WEBSITE || !ACCESS_CODE || !PASSWORD) {
 }
 
 async function puppeteer() {
+  const now = dayjs();
+  const previousMonth = now.subtract(1, "month").format("MMMM");
+
   try {
-    const now = dayjs();
-    const previousMonth = now.subtract(1, "month").format("MMMM");
     console.log(
-      `Bot fetching commission file for: ${previousMonth.toUpperCase()} month`
+      `Bot fetching commission file for: ${previousMonth.toUpperCase()}`
     );
 
     const browser = await Puppeteer.launch({ headless: NODE_ENV !== "demo" });
@@ -57,7 +58,9 @@ async function puppeteer() {
     await page.waitForSelector("tr.month");
     await page.screenshot({ path: "./dist/screenshots/commissionsPage.png" });
     console.log("--> commission page");
-    console.log(`...finding commission file for: ${previousMonth}`);
+    console.log(
+      `...finding commission file for: ${previousMonth.toUpperCase()}`
+    );
 
     const months = await page.$$eval("#fileContent tr.month", (monthRows) =>
       monthRows.map((month) => month.textContent)
@@ -86,7 +89,9 @@ async function puppeteer() {
   } catch (err) {
     throw new Error(err);
   } finally {
-    console.log("--> PDF commission file downloaded");
+    console.log(
+      `--> PDF commission file for ${previousMonth.toUpperCase()} downloaded`
+    );
     process.exit();
   }
 }
