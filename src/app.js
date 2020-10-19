@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import "dayjs/locale/fr.js";
 
 dotenv.config();
-dayjs.locale("fr");
 
 const { WEBSITE, ACCESS_CODE, PASSWORD, NODE_ENV } = process.env;
 
@@ -17,7 +16,7 @@ async function puppeteer() {
     const now = dayjs();
     const previousMonth = now.subtract(1, "month").format("MMMM");
     console.log(
-      `Recherche du fichier des commissions pour le mois de: ${previousMonth.toUpperCase()}`
+      `Bot fetching commission file for: ${previousMonth.toUpperCase()}`
     );
 
     const browser = await Puppeteer.launch({ headless: NODE_ENV !== "demo" });
@@ -27,6 +26,7 @@ async function puppeteer() {
     await page.goto(WEBSITE);
     await page.screenshot({ path: "./dist/screenshots/loginPage.png" });
     console.log("--> login page");
+    console.log("...logging in");
 
     await page.type("input#login.homeInput", ACCESS_CODE);
     await page.keyboard.press("Tab");
@@ -35,17 +35,20 @@ async function puppeteer() {
     await page.waitForSelector("img.clubAvantage");
     await page.screenshot({ path: "./dist/screenshots/portalPage.png" });
     console.log("--> portal page");
+    console.log("...going to home page");
 
     await page.click("img.clubAvantage");
     await page.setViewport({ width: 900, height: 798, isMobile: false });
     await page.waitForSelector("#menu_switch");
     await page.screenshot({ path: "./dist/screenshots/homePage.png" });
     console.log("--> home page");
+    console.log("...going to gestion page");
 
     await page.click("#menu_switch");
     await page.waitForNavigation({ waitUntil: "domcontentloaded" });
     await page.screenshot({ path: "./dist/screenshots/gestionPage.png" });
     console.log("--> gestion page");
+    console.log("...going to commission page");
 
     await page.click(".dropdown a");
     await page.click(".dropdown-content a");
@@ -53,6 +56,7 @@ async function puppeteer() {
     await page.waitForSelector("tr.month");
     await page.screenshot({ path: "./dist/screenshots/commissionsPage.png" });
     console.log("--> commission page");
+    console.log(`...finding commission file for: ${previousMonth}`);
 
     const months = await page.$$eval("#fileContent tr.month", (monthRows) =>
       monthRows.map((month) => month.textContent)
@@ -81,7 +85,7 @@ async function puppeteer() {
   } catch (err) {
     throw new Error(err);
   } finally {
-    console.log("--> PDF downloaded");
+    console.log("--> PDF commission file downloaded");
     process.exit();
   }
 }
