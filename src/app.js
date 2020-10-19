@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/fr.js";
 
 dotenv.config();
+dayjs.locale("fr");
 
 const { WEBSITE, ACCESS_CODE, PASSWORD, NODE_ENV } = process.env;
 
@@ -16,7 +17,7 @@ async function puppeteer() {
     const now = dayjs();
     const previousMonth = now.subtract(1, "month").format("MMMM");
     console.log(
-      `Bot fetching commission file for: ${previousMonth.toUpperCase()}`
+      `Bot fetching commission file for: ${previousMonth.toUpperCase()} month`
     );
 
     const browser = await Puppeteer.launch({ headless: NODE_ENV !== "demo" });
