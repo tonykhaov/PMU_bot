@@ -1,8 +1,8 @@
+import chalk from "chalk";
 import dotenv from "dotenv";
 import Puppeteer from "puppeteer";
 import dayjs from "dayjs";
 import "dayjs/locale/fr.js";
-
 dotenv.config();
 dayjs.locale("fr");
 
@@ -15,19 +15,21 @@ if (!WEBSITE || !ACCESS_CODE || !PASSWORD) {
 async function puppeteer() {
   const now = dayjs();
   const previousMonth = now.subtract(1, "month").format("MMMM");
-
   try {
     console.log(
-      `Bot fetching commission file for: ${previousMonth.toUpperCase()}`
+      chalk.bold.underline.blue(
+        `Bot fetching commission file for: ${previousMonth.toUpperCase()}`
+      )
     );
-
     const browser = await Puppeteer.launch({ headless: NODE_ENV !== "demo" });
     const page = await browser.newPage();
 
     await page.setViewport({ width: 640, height: 480, isMobile: true });
     await page.goto(WEBSITE);
     await page.screenshot({ path: "./dist/screenshots/loginPage.png" });
-    console.log("--> login page");
+
+    console.time("login page");
+    console.log(chalk.underline("--> login page"));
     console.log("...logging in");
 
     await page.type("input#login.homeInput", ACCESS_CODE);
@@ -36,20 +38,29 @@ async function puppeteer() {
     await page.click("td.button");
     await page.waitForSelector("img.clubAvantage");
     await page.screenshot({ path: "./dist/screenshots/portalPage.png" });
-    console.log("--> portal page");
+
+    console.timeEnd("login page");
+    console.time("portal page");
+    console.log(chalk.underline("--> portal page"));
     console.log("...going to home page");
 
     await page.click("img.clubAvantage");
     await page.setViewport({ width: 900, height: 798, isMobile: false });
     await page.waitForSelector("#menu_switch");
     await page.screenshot({ path: "./dist/screenshots/homePage.png" });
-    console.log("--> home page");
+
+    console.timeEnd("portal page");
+    console.time("home page");
+    console.log(chalk.underline("--> home page"));
     console.log("...going to gestion page");
 
     await page.click("#menu_switch");
     await page.waitForNavigation({ waitUntil: "domcontentloaded" });
     await page.screenshot({ path: "./dist/screenshots/gestionPage.png" });
-    console.log("--> gestion page");
+
+    console.timeEnd("home page");
+    console.time("gestion page");
+    console.log(chalk.underline("--> gestion page"));
     console.log("...going to commission page");
 
     await page.click(".dropdown a");
@@ -57,7 +68,10 @@ async function puppeteer() {
     await page.setViewport({ width: 1366, height: 798, isMobile: false });
     await page.waitForSelector("tr.month");
     await page.screenshot({ path: "./dist/screenshots/commissionsPage.png" });
-    console.log("--> commission page");
+
+    console.timeEnd("gestion page");
+    console.time("commission page");
+    console.log(chalk.underline("--> commission page"));
     console.log(
       `...finding commission file for: ${previousMonth.toUpperCase()}`
     );
@@ -83,6 +97,9 @@ async function puppeteer() {
       behavior: "allow",
       downloadPath: "./dist/pdf",
     });
+
+    console.timeEnd("commission page");
+
     await page.goto(previousMonthPDFLink);
 
     await browser.close();
@@ -90,9 +107,11 @@ async function puppeteer() {
     throw new Error(err);
   } finally {
     console.log(
-      `--> PDF commission file for ${previousMonth.toUpperCase()} downloaded`
+      chalk.bold.green(
+        `--> PDF commission file for ${previousMonth.toUpperCase()} downloaded`
+      )
     );
-    process.exit();
+    process.exit(0);
   }
 }
 
