@@ -1,8 +1,11 @@
-import chalk from "chalk";
-import dotenv from "dotenv";
-import Puppeteer from "puppeteer";
-import dayjs from "dayjs";
-import "dayjs/locale/fr.js";
+const chalk = require("chalk");
+const dotenv = require("dotenv");
+const Puppeteer = require("puppeteer");
+const dayjs = require("dayjs");
+require("dayjs/locale/fr.js");
+
+const { createFolders } = require("./utils.js");
+
 dotenv.config();
 dayjs.locale("fr");
 
@@ -21,6 +24,7 @@ async function puppeteer() {
         `Bot fetching commission file for: ${previousMonth.toUpperCase()}`
       )
     );
+    createFolders(["pdf", "screenshots"]);
     const browser = await Puppeteer.launch({ headless: NODE_ENV !== "demo" });
     const page = await browser.newPage();
 
